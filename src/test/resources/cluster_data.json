@@ -1,0 +1,20 @@
+[
+  {
+    "id":"1",
+    "materialType":{ "code":"a", "label":"BOOK/JOURNAL" },
+    "bibLevel":{ "code":"m", "label":"BOOK" },
+    "title":"Brain of the firm",
+    "instances":{
+      "2fgh4:667677887868672":{
+        "title": "Brain of the Firm",
+        "author": "Beer, Stafford",
+        "ids":{
+          "isbn":["12345678"],
+          "oclcnumber":["12345"]
+        },
+        "items":[
+        ]
+      }
+    }
+  }
+]
