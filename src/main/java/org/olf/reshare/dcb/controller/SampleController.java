@@ -2,30 +2,30 @@ package org.olf.reshare.dcb.controller;
 
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Produces;
 import io.micronaut.security.annotation.Secured;
 
-import static io.micronaut.security.rules.SecurityRule.IS_AUTHENTICATED;
 
-/**
- *
- * 
- */
+import io.micronaut.security.rules.SecurityRule;
+
 @Controller("/secure")
-@Secured(IS_AUTHENTICATED)
+@Secured(SecurityRule.IS_AUTHENTICATED)
 public class SampleController {
 
-		@Get("/admin")
-		@Secured({"admin"})
-		@Produces
-		public String admin() {
-			return "{admin:true}";
-		}
-	
-		@Get("/view")
-		@Secured({"viewer"})
-		@Produces
-		public String view() {
-			return "{admin: false}";
-		}
+	@Get("/admin")
+	@Secured({"admin"})
+	public String admin() {
+		return "You are admin!";
+	}
+
+	@Get("/view")
+	@Secured({"viewer"})
+	public String view() {
+		return "You are viewer!";
+	}
+
+	@Get("/anonymous")
+	@Secured(SecurityRule.IS_ANONYMOUS)
+	public String anonymous() {
+		return "You are anonymous!";
+	}
 }

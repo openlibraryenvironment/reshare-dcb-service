@@ -10,14 +10,28 @@ micronaut:
         paths: classpath:META-INF/swagger/views/swagger-ui
         mapping: /swagger-ui/**
   security:
-    authentication: bearer
+    authentication: BEARER
+    endpoints:
+      login:
+        enabled: true
+    redirect:
+      login-success: /secure/anonymous
+    token:
+      jwt:
+        enabled: true
+        signatures:
+          jwks:
+            keycloak:
+              url: http://localhost:8081/realms/dcb/protocol/openid-connect/certs
     oauth2.clients.keycloak:
       grant-type: password
       client-id: micronaut
       client-secret: 4k8ScSZvLK1ExE6WTgMAPsqjcfitQDNj
+      authorization:
+        url: http://localhost:8081/realms/dcb/protocol/openid-connect/auth
       token:
         url: http://localhost:8081/realms/dcb/protocol/openid-connect/token
-        auth-method: client_secret_post
+        auth-method: client-secret-post
 #r2dbc:
 #  datasources:
 #    default:
