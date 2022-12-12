@@ -4,23 +4,28 @@ import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Produces;
 import io.micronaut.security.annotation.Secured;
-import java.security.Principal;
 
 import static io.micronaut.security.rules.SecurityRule.IS_AUTHENTICATED;
-import static io.micronaut.http.MediaType.TEXT_PLAIN;
 
 /**
- * 
- * Testing purposes
  *
+ * 
  */
+@Controller("/secure")
 @Secured(IS_AUTHENTICATED)
-@Controller
-public class HomeController {
+public class SampleController {
 
-	@Produces(TEXT_PLAIN)
-	@Get
-	public String index (Principal principal) {
-		return principal.getName();
-	}
+		@Get("/admin")
+		@Secured({"admin"})
+		@Produces
+		public String admin() {
+			return "{admin:true}";
+		}
+	
+		@Get("/view")
+		@Secured({"viewer"})
+		@Produces
+		public String view() {
+			return "{admin: false}";
+		}
 }

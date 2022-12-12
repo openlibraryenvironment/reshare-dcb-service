@@ -4,11 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 import org.marc4j.MarcReader;
@@ -134,7 +132,7 @@ public class MarcImportService{
          List<VariableField> varibleFields = record.getVariableFields(tag);
          if( varibleFields != null ) { 
             List<String> values = getDataFromAllOccurerncesOfField(varibleFields, "a");
-            // if len == 1 then .value not .values
+            // TODO: if len == 1 then .value not .values
             final IdentifierBuilder identifer = IdentifierBuilder.builder().namespace( map.get( tag ) ).values( values );
             if ( values != null ) { identifiers.add( identifer.id(UUID.randomUUID()).build() ); }
          }
@@ -158,7 +156,7 @@ public class MarcImportService{
             mainAuthor.name(value100a);
             valuesAdded = true;
          }
-
+         // TODO: test always supplies null
          String authorIdentifier = field100.getSubfieldsAsString("0");
          if ( authorIdentifier != null ) { 
             mainAuthor.identifier( IdentifierBuilder.builder()
@@ -192,6 +190,7 @@ public class MarcImportService{
                author.name(value700a);
                valuesAdded = true;
             }
+            // TODO: test always supplies null?
             if ( field.getSubfieldsAsString("0") != null ) {
                author.identifier( IdentifierBuilder.builder()
                   .namespace("Authority record control number or standard number (R)")
@@ -312,14 +311,14 @@ public class MarcImportService{
 
          ImportedRecord importedRecord = ImportedRecordBuilder.builder()
             .id( UUID.randomUUID() )
-            .identifiers( getAllIdentifers( record ) )
-            .mainAuthor( getMainAuthor( record ) )
-            .otherAuthors( getOtherAuthors( record ) )
-            .title( getTitle( record ) )
-            .titleInformation( getTitleInformation( record ) )
-            .edition( getEdition( record ) )
-            .publicationInformation( getPublicationInformation( record ) )
-            .descriptions( getDescriptions( record ) )
+            .identifiers( getAllIdentifers(record) )
+            .mainAuthor( getMainAuthor(record) )
+            .otherAuthors( getOtherAuthors(record) )
+            .title( getTitle(record) )
+            .titleInformation( getTitleInformation(record) )
+            .edition( getEdition(record) )
+            .publicationInformation( getPublicationInformation(record) )
+            .descriptions( getDescriptions(record) )
             .build();
 
          bibRecordService.addBibRecord( importedRecord );

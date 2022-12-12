@@ -11,17 +11,13 @@ micronaut:
         mapping: /swagger-ui/**
   security:
     authentication: bearer
-    token:
-      jwt:
-        generator:
-          access-token:
-            expiration: 600
-        signatures:
-          secret:
-            generator:
-              secret: "${token.secret:placeholder}"
-              base64: true 
-              jws-algorithm: HS256
+    oauth2.clients.keycloak:
+      grant-type: password
+      client-id: micronaut
+      client-secret: 4k8ScSZvLK1ExE6WTgMAPsqjcfitQDNj
+      token:
+        url: http://localhost:8081/realms/dcb/protocol/openid-connect/token
+        auth-method: client_secret_post
 #r2dbc:
 #  datasources:
 #    default:
