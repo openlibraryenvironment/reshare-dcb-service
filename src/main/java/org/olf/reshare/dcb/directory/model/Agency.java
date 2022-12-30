@@ -6,6 +6,8 @@ import javax.validation.constraints.NotNull;
 import io.micronaut.core.annotation.NonNull;
 import jakarta.persistence.Column;
 import io.micronaut.serde.annotation.Serdeable;
+import io.micronaut.core.annotation.Introspected;
+
 
 
 /**
@@ -17,8 +19,8 @@ import io.micronaut.serde.annotation.Serdeable;
  * An Agency is always hosted by 1 "LocalServer". A "LocalServer" may host many Agencies.
  * In MOBIUS for example, the kc-towers "LocalServer" hosts 20 Agencies including Rockhurst.
  */
-@Serdeable
 @MappedEntity
+@Introspected  // because https://guides.micronaut.io/latest/micronaut-graphql-gradle-java.html told me to
 public class Agency {
 
   @NotNull
@@ -48,10 +50,6 @@ public class Agency {
 
   public UUID getId() {
     return id;
-  }
-
-  public void setId(UUID id) {
-    this.id = id;
   }
 
   public String toString() {

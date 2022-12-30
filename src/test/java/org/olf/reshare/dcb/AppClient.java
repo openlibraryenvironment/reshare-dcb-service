@@ -20,6 +20,6 @@ public interface AppClient {
 	    @Body UsernamePasswordCredentials credentials);
 
 	@Consumes(TEXT_PLAIN)
-	@Get
+	@Get("/secure")
 	String home (@Header(AUTHORIZATION) String authorization);
 }

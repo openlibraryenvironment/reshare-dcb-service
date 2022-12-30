@@ -7,8 +7,9 @@ import io.micronaut.security.authentication.AuthenticationRequest;
 import io.micronaut.security.authentication.AuthenticationResponse;
 import jakarta.inject.Singleton;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
+// import reactor.core.publisher.Flux;
+// import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.Mono;
 
 @Singleton
 public class DcbAuthenticationProvider implements AuthenticationProvider {
@@ -17,9 +18,9 @@ public class DcbAuthenticationProvider implements AuthenticationProvider {
 	private static String USERNAME = "user";
 	private static String PASSWORD = "password";
 
+/*
 	@Override
-	public Publisher<AuthenticationResponse> authenticate(@Nullable HttpRequest<?> httpRequest,
-			AuthenticationRequest<?, ?> authenticationRequest) {
+	public Publisher<AuthenticationResponse> authenticate(@Nullable HttpRequest<?> httpRequest, AuthenticationRequest<?, ?> authenticationRequest) {
 		return Flux.create(emitter -> {
 			if (authenticationRequest.getIdentity().equals(USERNAME) && authenticationRequest.getSecret().equals(PASSWORD)) {
 				emitter.next(AuthenticationResponse.success((String) authenticationRequest.getIdentity()));
@@ -29,4 +30,16 @@ public class DcbAuthenticationProvider implements AuthenticationProvider {
 			}
 		}, FluxSink.OverflowStrategy.ERROR);
 	}
+*/
+
+    @Override
+    public Publisher<AuthenticationResponse> authenticate(HttpRequest<?> httpRequest, AuthenticationRequest<?, ?> authenticationRequest) {
+        return Mono.<AuthenticationResponse>create(emitter -> {
+            if (authenticationRequest.getIdentity().equals(USERNAME) && authenticationRequest.getSecret().equals(PASSWORD)) {
+                emitter.success(AuthenticationResponse.success(USERNAME));
+            } else {
+                emitter.error(AuthenticationResponse.exception());
+            }
+        });
+    }
 }

@@ -24,14 +24,11 @@ class DeclarativeHttpClientWithJwtTest {
 	@Test
 	void verifyJwtAuthenticationWorksWithDeclarativeClient ()
 	    throws ParseException {
-		UsernamePasswordCredentials creds = new UsernamePasswordCredentials("user",
-		    "password");
+		UsernamePasswordCredentials creds = new UsernamePasswordCredentials("user", "password");
 		BearerAccessRefreshToken loginRsp = appClient.login(creds);
-
 		assertNotNull(loginRsp);
 		assertNotNull(loginRsp.getAccessToken());
 		assertTrue(JWTParser.parse(loginRsp.getAccessToken()) instanceof SignedJWT);
-
 		String msg = appClient.home("Bearer " + loginRsp.getAccessToken());
 		assertEquals("user", msg);
 	}

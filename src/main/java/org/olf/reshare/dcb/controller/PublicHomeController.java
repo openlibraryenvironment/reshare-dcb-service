@@ -8,18 +8,20 @@ import java.security.Principal;
 
 import static io.micronaut.security.rules.SecurityRule.IS_AUTHENTICATED;
 import static io.micronaut.http.MediaType.TEXT_PLAIN;
+import javax.annotation.security.PermitAll;
 
 /**
  * 
  * Testing purposes
  *
  */
-@Controller("/public")
+@Controller("/")
+@PermitAll
 public class PublicHomeController {
 
 	@Produces(TEXT_PLAIN)
 	@Get
 	public String index() {
-		return "hello public";
+		return "OK";
 	}
 }

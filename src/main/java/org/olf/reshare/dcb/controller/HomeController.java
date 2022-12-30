@@ -15,7 +15,7 @@ import static io.micronaut.http.MediaType.TEXT_PLAIN;
  *
  */
 @Secured(IS_AUTHENTICATED)
-@Controller
+@Controller("/secure")
 public class HomeController {
 
 	@Produces(TEXT_PLAIN)

@@ -76,7 +76,7 @@ class DirectoryTest {
 
 	@Test
         void testPublicHome() {
-        	HttpRequest<String> request = HttpRequest.GET("/public");
+        	HttpRequest<String> request = HttpRequest.GET("/");
 		String body = client.toBlocking().retrieve(request);
 		log.debug("public home result: {}",body);
         }
@@ -90,6 +90,14 @@ class DirectoryTest {
 		assert agencies.size() > 0;
         }
 
+        @Test
+        void testGraphQLHello() {
+		String query = "{\"query\":\"{ hello(name:'testname') }\"}";
+		HttpRequest<String> request = HttpRequest.POST("/graphql", query);
+		HttpResponse<String> response = client.toBlocking().exchange(request, Argument.of(String.class));
+		log.debug("Hello response: {}",response.body());
+        }
+
 
 	private HttpResponse<Map> fetch(String query) {
 		HttpRequest<String> request = HttpRequest.POST("/graphql", query);
@@ -100,7 +108,7 @@ class DirectoryTest {
 	}
 
 	private List<Map> getAgencies() {
-		String query = "{\"query\":\"query { agencies { name } }\"}";
+		String query = "{\"query\":\"{ agencies { name } }\"}";
 		HttpResponse<Map> response = fetch(query);
 		return (List<Map>) ((Map) response.getBody().get().get("data")).get("toDos");
 	}
