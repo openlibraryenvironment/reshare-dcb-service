@@ -1,7 +1,10 @@
 package org.olf.reshare.dcb.directory;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 
 import io.micronaut.core.type.Argument;
@@ -24,6 +27,8 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Map;
 
+
+@TestMethodOrder(OrderAnnotation.class)
 @MicronautTest(transactional = false)
 class DirectoryTest {
 
@@ -56,8 +61,9 @@ class DirectoryTest {
          * @See also https://micronaut-projects.github.io/micronaut-r2dbc/snapshot/guide/index.html
          */
 	@Test
+        @Order(1)    
 	void testAgencyCreation () {
-		log.debug("Directory lifecycle test");
+		log.debug("1. testAgencyCreation");
 
 		Mono<Agency> uos_mono = Mono.from(agency_repository.save( new Agency(UUID.randomUUID(),"University of Sheffield")));
 		log.debug("Created uos: {}",uos_mono.block().toString());
@@ -71,28 +77,41 @@ class DirectoryTest {
 
 		// Make sure that we have 3 agencies
                 List<Agency> agencies = Flux.from(agency_repository.findAll()).collectList().block();
+                assert agencies != null;
+
+                log.debug("Got {} agencies: {}",agencies.size(),agencies.toString());
                 assert agencies.size() == 3;
 	}
 
 	@Test
+        @Order(2)    
         void testPublicHome() {
+		log.debug("2. testPublicHome");
         	HttpRequest<String> request = HttpRequest.GET("/");
 		String body = client.toBlocking().retrieve(request);
 		log.debug("public home result: {}",body);
         }
 
         @Test
+        @Order(3)
         void testGraphQLQueryForAgencies() {
+		log.debug("3. testGraphQLQueryForAgencies");
+
+                // Add another agency to the three created above
+                createAgency("Rockhurst");
+
 		// see https://guides.micronaut.io/latest/micronaut-graphql-todo-maven-java.html
                 log.debug("Request agencies");
 		List<Map> agencies = getAgencies();
                 assert agencies != null;
 		log.debug("Got result {}",agencies.toString());
-		assert agencies.size() > 0;
+		assert agencies.size() == 4;
         }
 
         @Test
+        @Order(4)
         void testGraphQLHello() {
+		log.debug("4. testGraphQLQueryForAgencies");
 		String query = "{\"query\":\"{ hello }\"}";
 		HttpRequest<String> request = HttpRequest.POST("/graphql", query);
 		HttpResponse<String> response = client.toBlocking().exchange(request, Argument.of(String.class));
@@ -113,5 +132,12 @@ class DirectoryTest {
 		HttpResponse<Map> response = fetch(query);
                 log.debug("Response: {}",response.toString());
 		return (List<Map>) ((Map) response.getBody().get().get("data")).get("agencies");
+	}
+
+
+	private String createAgency(String name) {
+		String query = "{\"query\": \"mutation { createAgency(name: \\\"" + name + "\\\") { id } }\" }";
+		HttpResponse<Map> response = fetch(query);
+		return ((Map)((Map) response.getBody(Map.class).get().get("data")).get("createAgency")).get("id").toString();
 	}
 }

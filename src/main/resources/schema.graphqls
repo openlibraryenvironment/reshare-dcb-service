@@ -3,6 +3,12 @@ type Query {
     agencies: [Agency!]! 
 }
 
+
+type Mutation {
+    createAgency(name: String!): Agency
+}
+
+
 type Agency { 
     id: ID!
     name: String!

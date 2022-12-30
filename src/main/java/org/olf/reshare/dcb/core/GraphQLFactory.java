@@ -56,13 +56,13 @@ public class GraphQLFactory {
                         .dataFetcher("hello", directoryDataFetchers.getHelloDataFetcher())
                      )
 
+                .type(TypeRuntimeWiring.newTypeWiring("Mutation")
+                        .dataFetcher("createAgency", directoryDataFetchers.createAgencyDataFetcher())
+                     )
                  /*
                 .type("Agency", typeWiring -> typeWiring  
                         .dataFetcher("agency", agencyDataFetcher))
 
-                .type("Mutation", typeWiring -> typeWiring 
-                        .dataFetcher("createToDo", createToDoDataFetcher)
-                        .dataFetcher("completeToDo", completeToDoDataFetcher))
 
                 .type("ToDo", typeWiring -> typeWiring 
                         .dataFetcher("author", authorDataFetcher))
