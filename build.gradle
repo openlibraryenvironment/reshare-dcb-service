@@ -71,7 +71,6 @@ dependencies {
 	
 //	implementation("io.micronaut:micronaut-jackson-databind") // Not using Jackson for binding.
 	implementation("io.micronaut.serde:micronaut-serde-jackson:1.3.2")
-        implementation("io.micronaut.flyway:micronaut-flyway")
 
 	runtimeOnly("ch.qos.logback:logback-classic")
 	runtimeOnly("org.slf4j:log4j-over-slf4j:1.7.36")

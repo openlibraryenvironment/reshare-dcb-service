@@ -86,13 +86,14 @@ class DirectoryTest {
 		// see https://guides.micronaut.io/latest/micronaut-graphql-todo-maven-java.html
                 log.debug("Request agencies");
 		List<Map> agencies = getAgencies();
+                assert agencies != null;
 		log.debug("Got result {}",agencies.toString());
 		assert agencies.size() > 0;
         }
 
         @Test
         void testGraphQLHello() {
-		String query = "{\"query\":\"{ hello(name:'testname') }\"}";
+		String query = "{\"query\":\"{ hello }\"}";
 		HttpRequest<String> request = HttpRequest.POST("/graphql", query);
 		HttpResponse<String> response = client.toBlocking().exchange(request, Argument.of(String.class));
 		log.debug("Hello response: {}",response.body());
@@ -110,6 +111,7 @@ class DirectoryTest {
 	private List<Map> getAgencies() {
 		String query = "{\"query\":\"{ agencies { name } }\"}";
 		HttpResponse<Map> response = fetch(query);
-		return (List<Map>) ((Map) response.getBody().get().get("data")).get("toDos");
+                log.debug("Response: {}",response.toString());
+		return (List<Map>) ((Map) response.getBody().get().get("data")).get("agencies");
 	}
 }

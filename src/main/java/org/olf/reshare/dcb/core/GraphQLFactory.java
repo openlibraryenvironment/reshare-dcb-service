@@ -17,8 +17,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.olf.reshare.dcb.directory.beans.AgenciesDataFetcher;
-import org.olf.reshare.dcb.directory.beans.HelloDataFetcher;
+import org.olf.reshare.dcb.directory.beans.DirectoryDataFetchers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +27,11 @@ import org.slf4j.LoggerFactory;
 @Factory 
 public class GraphQLFactory {
 
-    public static final Logger log = LoggerFactory.getLogger(AgenciesDataFetcher.class);
+    public static final Logger log = LoggerFactory.getLogger(GraphQLFactory.class);
 
     @Singleton 
     public GraphQL graphQL(ResourceResolver resourceResolver,
-                           HelloDataFetcher helloDataFetcher,
-                           AgenciesDataFetcher agenciesDataFetcher) {
+                           DirectoryDataFetchers directoryDataFetchers) {
   
 	log.debug("GraphQLFactory::graphQL");
 
@@ -54,8 +52,8 @@ public class GraphQLFactory {
         // Create the runtime wiring.
         RuntimeWiring runtimeWiring = RuntimeWiring.newRuntimeWiring()
                 .type( TypeRuntimeWiring.newTypeWiring("Query")
-                        .dataFetcher("agencies", agenciesDataFetcher)
-                        .dataFetcher("hello", helloDataFetcher)
+                        .dataFetcher("agencies", directoryDataFetchers.getAgenciesDataFetcher())
+                        .dataFetcher("hello", directoryDataFetchers.getHelloDataFetcher())
                      )
 
                  /*
