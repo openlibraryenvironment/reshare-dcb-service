@@ -43,9 +43,16 @@ r2dbc:
       username: "${db.username:dcb}"
       password: "${db.password:dcb}"
       dialect: postgres
-      
       schema-generate: CREATE
-      
+
+
+
+
+graphql:
+  enabled: true
+  graphiql: # enables the /graphiql endpoint to test calls against your graph.
+    enabled: true
+
 # elasticsearch.httpHosts: http://localhost:9200,http://127.0.0.2:9200
 netty:
   default:

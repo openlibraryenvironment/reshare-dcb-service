@@ -14,13 +14,12 @@ import static io.micronaut.http.MediaType.TEXT_PLAIN;
  * Testing purposes
  *
  */
-@Secured(IS_AUTHENTICATED)
-@Controller
-public class HomeController {
+@Controller("/public")
+public class PublicHomeController {
 
 	@Produces(TEXT_PLAIN)
 	@Get
-	public String index(Principal principal) {
-		return principal.getName();
+	public String index() {
+		return "hello public";
 	}
 }

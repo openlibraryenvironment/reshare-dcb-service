@@ -5,6 +5,8 @@ import java.util.UUID;
 import javax.validation.constraints.NotNull;
 import io.micronaut.core.annotation.NonNull;
 import jakarta.persistence.Column;
+import io.micronaut.serde.annotation.Serdeable;
+
 
 /**
  * Agency.
@@ -15,6 +17,7 @@ import jakarta.persistence.Column;
  * An Agency is always hosted by 1 "LocalServer". A "LocalServer" may host many Agencies.
  * In MOBIUS for example, the kc-towers "LocalServer" hosts 20 Agencies including Rockhurst.
  */
+@Serdeable
 @MappedEntity
 public class Agency {
 

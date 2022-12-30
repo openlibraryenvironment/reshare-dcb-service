@@ -3,8 +3,13 @@ package org.olf.reshare.dcb.directory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+
+import io.micronaut.core.type.Argument;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
+import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.runtime.EmbeddedApplication;
 import jakarta.inject.Inject;
 import javax.transaction.Transactional;
@@ -17,6 +22,7 @@ import java.util.UUID;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import java.util.List;
+import java.util.Map;
 
 @MicronautTest(transactional = false)
 class DirectoryTest {
@@ -56,8 +62,8 @@ class DirectoryTest {
 		Mono<Agency> uos_mono = Mono.from(agency_repository.save( new Agency(UUID.randomUUID(),"University of Sheffield")));
 		log.debug("Created uos: {}",uos_mono.block().toString());
 
-		Mono<Agency> stl_mono = Mono.from(agency_repository.save( new Agency(UUID.randomUUID(),"St Louis University")));
-		log.debug("Created stl: {}",stl_mono.block().toString());
+		Agency stl_instance = Mono.from(agency_repository.save( new Agency(UUID.randomUUID(),"St Louis University"))).block();
+		log.debug("Created stl: {}",stl_instance);
 
                 // See id the repo also gives os old style imperative api
 		Agency diku = Mono.from(agency_repository.save( new Agency(UUID.randomUUID(),"diku Snapshot"))).block();
@@ -68,4 +74,34 @@ class DirectoryTest {
                 assert agencies.size() == 3;
 	}
 
+	@Test
+        void testPublicHome() {
+        	HttpRequest<String> request = HttpRequest.GET("/public");
+		String body = client.toBlocking().retrieve(request);
+		log.debug("public home result: {}",body);
+        }
+
+        @Test
+        void testGraphQLQueryForAgencies() {
+		// see https://guides.micronaut.io/latest/micronaut-graphql-todo-maven-java.html
+                log.debug("Request agencies");
+		List<Map> agencies = getAgencies();
+		log.debug("Got result {}",agencies.toString());
+		assert agencies.size() > 0;
+        }
+
+
+	private HttpResponse<Map> fetch(String query) {
+		HttpRequest<String> request = HttpRequest.POST("/graphql", query);
+		HttpResponse<Map> response = client.toBlocking().exchange(request, Argument.of(Map.class));
+		assert response.status() == HttpStatus.OK;
+		assert response.body() != null;
+		return response;
+	}
+
+	private List<Map> getAgencies() {
+		String query = "{\"query\":\"query { agencies { name } }\"}";
+		HttpResponse<Map> response = fetch(query);
+		return (List<Map>) ((Map) response.getBody().get().get("data")).get("toDos");
+	}
 }
