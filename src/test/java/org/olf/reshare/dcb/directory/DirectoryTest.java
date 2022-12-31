@@ -10,6 +10,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.micronaut.core.type.Argument;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
+import io.micronaut.http.MutableHttpRequest;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
@@ -26,6 +27,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Map;
+import org.olf.reshare.dcb.AppClient;
+import io.micronaut.security.authentication.UsernamePasswordCredentials;
+import io.micronaut.security.token.jwt.render.BearerAccessRefreshToken;
 
 
 @TestMethodOrder(OrderAnnotation.class)
@@ -40,6 +44,10 @@ class DirectoryTest {
 
 	@Inject
 	EmbeddedApplication<?> application;
+
+        // Inject our custom app client from the parent package so we can leverage the login function
+        @Inject
+        AppClient hubClient;
 
 	@Inject
 	@Client("/")
@@ -119,8 +127,12 @@ class DirectoryTest {
         }
 
 
-	private HttpResponse<Map> fetch(String query) {
-		HttpRequest<String> request = HttpRequest.POST("/graphql", query);
+	private HttpResponse<Map> fetch(String query, String access_token) {
+		MutableHttpRequest<String> request = HttpRequest.POST("/graphql", query);
+
+                if ( access_token != null )
+                  request.bearerAuth(access_token);
+
 		HttpResponse<Map> response = client.toBlocking().exchange(request, Argument.of(Map.class));
 		assert response.status() == HttpStatus.OK;
 		assert response.body() != null;
@@ -129,15 +141,32 @@ class DirectoryTest {
 
 	private List<Map> getAgencies() {
 		String query = "{\"query\":\"{ agencies { name } }\"}";
-		HttpResponse<Map> response = fetch(query);
+		HttpResponse<Map> response = fetch(query, null);
                 log.debug("Response: {}",response.toString());
 		return (List<Map>) ((Map) response.getBody().get().get("data")).get("agencies");
 	}
 
 
 	private String createAgency(String name) {
+
+                UsernamePasswordCredentials creds = new UsernamePasswordCredentials("user", "password");
+                BearerAccessRefreshToken loginRsp = hubClient.login(creds);
+                String accessToken = loginRsp.getAccessToken();
+                log.debug("create agency will happen with auth header: {}",accessToken);
+
 		String query = "{\"query\": \"mutation { createAgency(name: \\\"" + name + "\\\") { id } }\" }";
-		HttpResponse<Map> response = fetch(query);
-		return ((Map)((Map) response.getBody(Map.class).get().get("data")).get("createAgency")).get("id").toString();
+		HttpResponse<Map> response = fetch(query, accessToken);
+		// return ((Map)((Map) response.getBody(Map.class).get().get("data")).get("createAgency")).get("id").toString();
+                if ( response != null ) {
+                  Map response_as_map = (Map) response.getBody(Map.class).get();
+                  Map data_map = (Map) response_as_map.get("data");
+                  if ( data_map != null ) {
+                    Map returned_agecy_as_map = (Map)data_map.get("createAgency");
+                    if ( returned_agecy_as_map != null )
+	  	      return returned_agecy_as_map.get("id").toString();
+                  }
+                }
+
+		return null;
 	}
 }
